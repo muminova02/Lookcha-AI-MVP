@@ -7,9 +7,8 @@ from datetime import datetime, timezone
 
 from fastapi import APIRouter, HTTPException
 
+from app.repositories import lead_repository
 from app.schemas.lead import Lead, LeadCreate
-from app.storage import json_store
-from app.storage.json_store import StorageError
 
 router = APIRouter(prefix="/leads", tags=["leads"])
 
@@ -22,7 +21,7 @@ async def create_lead(payload: LeadCreate) -> Lead:
         **payload.model_dump(),
     )
     try:
-        json_store.append_item("leads", lead.model_dump(mode="json"))
-    except StorageError as exc:
+        await lead_repository.create(lead.model_dump(mode="json"))
+    except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=500, detail="Leadni saqlashda xatolik.") from exc
     return lead

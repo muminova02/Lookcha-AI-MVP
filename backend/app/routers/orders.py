@@ -7,17 +7,16 @@ from datetime import datetime, timezone
 
 from fastapi import APIRouter, HTTPException
 
+from app.repositories import order_repository
 from app.schemas.order import Order, OrderCreate
 from app.services import product_service
-from app.storage import json_store
-from app.storage.json_store import StorageError
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
 
 @router.post("", response_model=Order, status_code=201)
 async def create_order(payload: OrderCreate) -> Order:
-    if product_service.get_product(payload.product_id) is None:
+    if await product_service.get_product(payload.product_id) is None:
         raise HTTPException(status_code=404, detail="Mahsulot topilmadi")
 
     order = Order(
@@ -26,7 +25,7 @@ async def create_order(payload: OrderCreate) -> Order:
         **payload.model_dump(),
     )
     try:
-        json_store.append_item("orders", order.model_dump(mode="json"))
-    except StorageError as exc:
+        await order_repository.create(order.model_dump(mode="json"))
+    except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=500, detail="Buyurtmani saqlashda xatolik.") from exc
     return order

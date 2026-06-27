@@ -14,4 +14,4 @@ router = APIRouter(prefix="/recommendations", tags=["recommendations"])
 async def get_recommendations(
     product_id: str = Query(..., description="Asosiy mahsulot id"),
 ) -> RecommendationsResponse:
-    return recommendation_service.get_recommendations(product_id)
+    return await recommendation_service.get_recommendations(product_id)

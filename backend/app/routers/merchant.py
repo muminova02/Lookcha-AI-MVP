@@ -12,9 +12,9 @@ router = APIRouter(prefix="/merchant", tags=["merchant"])
 
 @router.get("/dashboard", response_model=MerchantDashboard)
 async def get_dashboard() -> MerchantDashboard:
-    return merchant_service.get_dashboard()
+    return await merchant_service.get_dashboard()
 
 
 @router.get("/qr-link", response_model=QrLink)
 async def get_qr_link() -> QrLink:
-    return merchant_service.get_qr_link()
+    return await merchant_service.get_qr_link()

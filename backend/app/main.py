@@ -5,11 +5,14 @@ Additional routers (products, tryon, recommendations, merchant, leads,
 orders) are mounted in later stages.
 """
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
+from app.db.mongodb import close_mongo_connection, connect_to_mongo, ensure_indexes
 from app.routers import (
     health,
     leads,
@@ -21,11 +24,22 @@ from app.routers import (
 )
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await connect_to_mongo()
+    await ensure_indexes()
+    try:
+        yield
+    finally:
+        await close_mongo_connection()
+
+
 def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.app_name,
-        version="0.1.0",
+        version="0.2.0",
         description="AI try-on integration platform for fashion marketplaces.",
+        lifespan=lifespan,
     )
 
     # CORS
