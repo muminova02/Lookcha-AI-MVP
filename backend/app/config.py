@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     data_dir: str = "app/data"
     uploads_dir: str = "app/storage/uploads"
 
+    # MongoDB
+    mongodb_uri: str = "mongodb://localhost:27017"
+    mongodb_db: str = "lookcha_ai"
+
     # AI try-on provider: "mock" | "nanobanana"
     ai_provider: str = "mock"
     ai_api_key: str | None = None
