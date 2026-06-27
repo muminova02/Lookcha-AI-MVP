@@ -12,17 +12,16 @@ from functools import lru_cache
 from app.config import settings
 from app.services.ai.base import AITryOnAdapter
 from app.services.ai.mock_adapter import MockAITryOn
+from app.services.ai.nanobanana_adapter import NanoBananaAdapter
 
 
 @lru_cache
 def get_ai_adapter() -> AITryOnAdapter:
     provider = (settings.ai_provider or "mock").lower()
 
-    if provider == "mock":
-        return MockAITryOn()
+    if provider == "nanobanana":
+        return NanoBananaAdapter()
 
-    # Real providers plug in here later, e.g.:
-    # if provider == "replicate":
-    #     return ReplicateTryOn(api_key=settings.ai_api_key, model=settings.ai_model)
-
-    raise ValueError(f"Unsupported AI_PROVIDER: {provider!r}")
+    # Default / "mock". (NanoBanana itself falls back to mock at runtime if
+    # its config or image URLs are unusable, so the demo never breaks.)
+    return MockAITryOn()

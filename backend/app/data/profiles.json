@@ -20,5 +20,27 @@
     "body_type": "O‘rtacha",
     "style": "Klassik",
     "occasion": "Kundalik"
+  },
+  {
+    "profile_id": "prof_1b75e00951d7",
+    "photo_url": "http://localhost:8010/uploads/0ba113d96fc24dae82bcb2b590091b1d.png",
+    "height_cm": 165,
+    "weight_kg": 55,
+    "age_range": "18-24",
+    "usual_size": "M",
+    "body_type": "O‘rtacha",
+    "style": "Klassik",
+    "occasion": "Kundalik"
+  },
+  {
+    "profile_id": "prof_32f765d913c1",
+    "photo_url": "http://127.0.0.1:8001/uploads/d32f3875e24a46d78c9d04355dc42886.jpg",
+    "height_cm": 165,
+    "weight_kg": 55,
+    "age_range": "18-24",
+    "usual_size": "M",
+    "body_type": "O‘rtacha",
+    "style": "Klassik",
+    "occasion": "Kundalik"
   }
 ]

@@ -33,10 +33,21 @@ class Settings(BaseSettings):
     data_dir: str = "app/data"
     uploads_dir: str = "app/storage/uploads"
 
-    # AI try-on provider
+    # AI try-on provider: "mock" | "nanobanana"
     ai_provider: str = "mock"
     ai_api_key: str | None = None
     ai_model: str | None = None
+
+    # NanoBanana Pro virtual try-on
+    nanobanana_api_key: str | None = None
+    nanobanana_base_url: str = "https://api.nanobananaapi.ai"
+    nanobanana_callback_url: str = "https://example.com/lookcha-callback"
+    nanobanana_resolution: str = "2K"
+    nanobanana_aspect_ratio: str = "3:4"
+
+    # Public origin used to expose locally-saved upload URLs to external APIs
+    # (e.g. ngrok / deployed backend). When empty, NanoBanana falls back to mock.
+    public_base_url: str | None = None
 
     model_config = SettingsConfigDict(
         env_file=".env",

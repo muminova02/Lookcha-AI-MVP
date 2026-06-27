@@ -31,10 +31,10 @@ def save_profile(profile: ProfileData, photo_url: str) -> str:
     return profile_id
 
 
-def _get_profile(profile_id: str) -> ProfileData:
+def _get_profile_row(profile_id: str) -> dict:
     for row in json_store.read_list("profiles"):
         if row.get("profile_id") == profile_id:
-            return ProfileData(**{k: row[k] for k in ProfileData.model_fields if k in row})
+            return row
     raise ProfileNotFoundError(profile_id)
 
 
@@ -43,10 +43,12 @@ async def generate_tryon(product_id: str, profile_id: str) -> TryOnResult:
     if product is None:
         raise ProductNotFoundError(product_id)
 
-    profile = _get_profile(profile_id)
+    row = _get_profile_row(profile_id)
+    profile = ProfileData(**{k: row[k] for k in ProfileData.model_fields if k in row})
+    photo_url = row.get("photo_url")
 
     adapter = get_ai_adapter()
-    generation = await adapter.generate(product, profile)
+    generation = await adapter.generate(product, profile, photo_url)
 
     recommendations = get_recommendations(product_id)
 

@@ -19,8 +19,16 @@ class AITryOnAdapter(ABC):
     name: str = "base"
 
     @abstractmethod
-    async def generate(self, product: Product, profile: ProfileData) -> AIGeneration:
+    async def generate(
+        self,
+        product: Product,
+        profile: ProfileData,
+        photo_url: str | None = None,
+    ) -> AIGeneration:
         """Generate a virtual try-on result for `product` given `profile`.
+
+        `photo_url` is the stored URL of the customer's uploaded full-body
+        photo (used by real providers; ignored by the mock).
 
         Implementations should return an `AIGeneration` with a full-body
         (head-to-toe) `tryon_image_url`, a match score, size/color guidance,

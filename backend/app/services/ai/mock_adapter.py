@@ -24,7 +24,12 @@ _ADVICE = (
 class MockAITryOn(AITryOnAdapter):
     name = "mock"
 
-    async def generate(self, product: Product, profile: ProfileData) -> AIGeneration:
+    async def generate(
+        self,
+        product: Product,
+        profile: ProfileData,
+        photo_url: str | None = None,
+    ) -> AIGeneration:
         # Simulate model inference latency (1.5–2.0s).
         await asyncio.sleep(random.uniform(1.5, 2.0))
 
