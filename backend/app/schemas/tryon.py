@@ -37,10 +37,18 @@ class AIGeneration(BaseModel):
     size_recommendation: str
     color_match: str
     advice: str
+    # Which provider actually produced the image ("nanobanana" | "mock").
+    # Lets the caller record a job as success vs. fallback without changing
+    # the public response contract.
+    source: str = "mock"
 
 
 class TryOnResult(BaseModel):
-    """Full try-on response returned to the client."""
+    """Full try-on response returned to the client.
+
+    `status` and `warning` are additive (optional) fields; the existing
+    frontend ignores unknown fields, so the contract stays compatible.
+    """
 
     tryon_image_url: str
     match_score: int = Field(..., ge=0, le=100)
@@ -49,3 +57,5 @@ class TryOnResult(BaseModel):
     advice: str
     product: Product
     recommended_products: list[RecommendedProduct]
+    status: str = "success"
+    warning: str | None = None
