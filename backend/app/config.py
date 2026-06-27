@@ -5,10 +5,10 @@ via pydantic-settings. Keep this module free of business logic so it can be
 imported anywhere without side effects.
 """
 
+import json
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Project root = backend/  (this file lives at backend/app/config.py)
@@ -26,8 +26,11 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
 
-    # CORS: accept a comma-separated string or a list.
-    cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+    # CORS: stored as a plain string so pydantic-settings never tries to
+    # JSON-decode it. Supports both comma-separated and JSON-array formats.
+    # e.g.  CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+    # e.g.  CORS_ORIGINS=["http://localhost:5173","http://127.0.0.1:5173"]
+    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
     # Storage (relative to BASE_DIR unless an absolute path is given)
     data_dir: str = "app/data"
@@ -60,13 +63,13 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    @field_validator("cors_origins", mode="before")
-    @classmethod
-    def _split_cors(cls, value: object) -> object:
-        """Allow CORS_ORIGINS to be provided as a comma-separated string."""
-        if isinstance(value, str):
-            return [origin.strip() for origin in value.split(",") if origin.strip()]
-        return value
+    @property
+    def cors_origins_list(self) -> list[str]:
+        """Parse CORS_ORIGINS as a list (comma-separated or JSON array)."""
+        raw = self.cors_origins.strip()
+        if raw.startswith("["):
+            return json.loads(raw)
+        return [o.strip() for o in raw.split(",") if o.strip()]
 
     @property
     def data_path(self) -> Path:
