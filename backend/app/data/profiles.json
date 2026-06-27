@@ -1,0 +1,13 @@
+[
+  {
+    "profile_id": "prof_738044511752",
+    "photo_url": "http://localhost:8000/uploads/5ea280e11ec14016aba639fcab6940ae.png",
+    "height_cm": 170,
+    "weight_kg": 62,
+    "age_range": "25-34",
+    "usual_size": "M",
+    "body_type": "Oddiy",
+    "style": "Klassik",
+    "occasion": "Kundalik"
+  }
+]

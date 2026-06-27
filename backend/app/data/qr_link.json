@@ -1,0 +1,11 @@
+{
+  "store_name": "Moda UZ",
+  "store_link": "https://lookcha.ai/s/moda-uz",
+  "qr_image_url": "https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=https://lookcha.ai/s/moda-uz",
+  "instagram_bio_link": "https://lookcha.ai/s/moda-uz?utm_source=instagram",
+  "widget_embed_code": "<script src=\"https://cdn.lookcha.ai/widget.js\" data-store=\"moda-uz\"></script>\n<lookcha-button product-id=\"premium-ipak-koylak\"></lookcha-button>",
+  "stats": {
+    "via_qr": 138,
+    "via_link_tryon": 421
+  }
+}

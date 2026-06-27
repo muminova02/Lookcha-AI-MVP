@@ -1,0 +1,26 @@
+# HTML design references (Stitch exports — not for repo)
+html ko'rinishlar/
+
+# Backend
+backend/.venv/
+backend/venv/
+backend/.env
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.py[cod]
+backend/app/storage/uploads/*
+!backend/app/storage/uploads/.gitkeep
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.env
+frontend/*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.local

@@ -1,0 +1,13 @@
+[
+  {
+    "product_id": "premium-ipak-koylak",
+    "size": "M",
+    "customer_name": "Test",
+    "customer_phone": "+998901234567",
+    "address": "Toshkent",
+    "id": "ord_bab40f98faab",
+    "status": "qabul_qilindi",
+    "message": "Buyurtma qabul qilindi. Tez orada siz bilan bog‘lanamiz.",
+    "created_at": "2026-06-27T05:25:16.765821Z"
+  }
+]

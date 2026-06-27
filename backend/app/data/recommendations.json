@@ -1,0 +1,23 @@
+{
+  "premium-ipak-koylak": {
+    "stylist_advice": "Bu kiyim sizga yaxshi tushdi. Sizning uslub profilingizga ko‘ra bej, qora va bordo rangdagi klassik modellar ham mos keladi. Mana shu platformadan sizga mos variantlar.",
+    "items": [
+      { "product_id": "klassik-bordo-koylak", "match_score": 92, "section": "sizga_mos" },
+      { "product_id": "bej-kardigan", "match_score": 88, "section": "sizga_mos" },
+      { "product_id": "oq-bluzka", "match_score": 85, "section": "yoqishi_mumkin" },
+      { "product_id": "qora-shim", "match_score": 83, "section": "yoqishi_mumkin" },
+      { "product_id": "baxmal-yubka", "match_score": 80, "section": "shu_dokondan" },
+      { "product_id": "kuzgi-palto", "match_score": 78, "section": "oxshash" }
+    ]
+  },
+  "_default": {
+    "stylist_advice": "Sizning uslubingizga mos keladigan platformadagi boshqa variantlar.",
+    "items": [
+      { "product_id": "premium-ipak-koylak", "match_score": 90, "section": "sizga_mos" },
+      { "product_id": "klassik-bordo-koylak", "match_score": 87, "section": "sizga_mos" },
+      { "product_id": "bej-kardigan", "match_score": 84, "section": "yoqishi_mumkin" },
+      { "product_id": "oq-bluzka", "match_score": 82, "section": "shu_dokondan" },
+      { "product_id": "kuzgi-palto", "match_score": 79, "section": "oxshash" }
+    ]
+  }
+}

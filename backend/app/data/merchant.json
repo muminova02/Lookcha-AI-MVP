@@ -1,0 +1,37 @@
+{
+  "store_name": "Moda UZ",
+  "kpis": {
+    "tryon_count": 1248,
+    "new_leads": 86,
+    "plan": "Pro paket",
+    "remaining_limit": 752
+  },
+  "integration": {
+    "api_widget": "Faol",
+    "qr_link": "Faol",
+    "marketplace": "Tayyor"
+  },
+  "traffic_sources": [
+    { "source": "Instagram", "visits": 540, "percent": 43 },
+    { "source": "Telegram", "visits": 360, "percent": 29 },
+    { "source": "Web sayt", "visits": 210, "percent": 17 },
+    { "source": "QR (offline)", "visits": 138, "percent": 11 }
+  ],
+  "top_products": [
+    { "product_id": "premium-ipak-koylak", "name": "Premium ipak ko‘ylak", "tryons": 412 },
+    { "product_id": "klassik-bordo-koylak", "name": "Klassik bordo ko‘ylak", "tryons": 305 },
+    { "product_id": "bej-kardigan", "name": "Bej kardigan", "tryons": 221 },
+    { "product_id": "kuzgi-palto", "name": "Kuzgi palto", "tryons": 184 }
+  ],
+  "interested_customers": [
+    { "name": "Madina K.", "product": "Premium ipak ko‘ylak", "match_score": 92, "source": "Instagram" },
+    { "name": "Dilnoza R.", "product": "Klassik bordo ko‘ylak", "match_score": 88, "source": "Telegram" },
+    { "name": "Sevara A.", "product": "Bej kardigan", "match_score": 85, "source": "QR (offline)" }
+  ],
+  "conversion": {
+    "tryon_to_lead": 18.4,
+    "lead_to_order": 31.2,
+    "overall": 5.7
+  },
+  "ai_advice": "Premium ipak ko‘ylak eng ko‘p sinab ko‘rilmoqda, ammo konversiya o‘rtacha. Mahsulot sahifasiga bepul yetkazib berish va o‘lcham jadvalini qo‘shsangiz, buyurtmalar oshishi mumkin."
+}
