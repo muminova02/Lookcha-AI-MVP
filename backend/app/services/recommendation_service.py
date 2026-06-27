@@ -1,25 +1,30 @@
-"""Recommendation domain service.
+"""Recommendation domain service (MongoDB-backed).
 
-Joins recommendation metadata (match score + section) with full product
-records so the API returns ready-to-render `RecommendedProduct` items.
+Joins recommendation metadata (match score + section) stored in the
+`recommendations` collection with full product records so the API returns
+ready-to-render `RecommendedProduct` items.
 """
 
 from __future__ import annotations
 
+from app.db.mongodb import get_database
 from app.schemas.product import RecommendationsResponse, RecommendedProduct
 from app.services.product_service import get_product
-from app.storage import json_store
 
 _SECTION_ORDER = ["sizga_mos", "yoqishi_mumkin", "shu_dokondan", "oxshash"]
 
 
-def get_recommendations(product_id: str) -> RecommendationsResponse:
-    data = json_store.read_json("recommendations", default={}) or {}
-    block = data.get(product_id) or data.get("_default") or {}
+async def get_recommendations(product_id: str) -> RecommendationsResponse:
+    db = get_database()
+    block = (
+        await db.recommendations.find_one({"product_id": product_id}, {"_id": 0})
+        or await db.recommendations.find_one({"product_id": "_default"}, {"_id": 0})
+        or {}
+    )
 
     items: list[RecommendedProduct] = []
     for entry in block.get("items", []):
-        product = get_product(entry.get("product_id", ""))
+        product = await get_product(entry.get("product_id", ""))
         if product is None:
             continue  # skip stale references gracefully
         items.append(

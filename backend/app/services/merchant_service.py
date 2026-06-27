@@ -1,14 +1,16 @@
-"""Merchant dashboard and QR/link service."""
+"""Merchant dashboard and QR/link service (MongoDB-backed)."""
 
 from __future__ import annotations
 
+from app.repositories import merchant_repository
 from app.schemas.merchant import MerchantDashboard, QrLink
-from app.storage import json_store
 
 
-def get_dashboard() -> MerchantDashboard:
-    return MerchantDashboard(**json_store.read_json("merchant", default={}))
+async def get_dashboard() -> MerchantDashboard:
+    doc = await merchant_repository.get_dashboard() or {}
+    return MerchantDashboard(**doc)
 
 
-def get_qr_link() -> QrLink:
-    return QrLink(**json_store.read_json("qr_link", default={}))
+async def get_qr_link() -> QrLink:
+    doc = await merchant_repository.get_qr_link() or {}
+    return QrLink(**doc)
