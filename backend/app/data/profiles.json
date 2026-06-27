@@ -9,5 +9,16 @@
     "body_type": "Oddiy",
     "style": "Klassik",
     "occasion": "Kundalik"
+  },
+  {
+    "profile_id": "prof_ead79f39cb4f",
+    "photo_url": "http://localhost:8000/uploads/e376bc7867e64d11b3a8f31ef6375433.png",
+    "height_cm": 170,
+    "weight_kg": 62,
+    "age_range": "25-34",
+    "usual_size": "M",
+    "body_type": "O‘rtacha",
+    "style": "Klassik",
+    "occasion": "Kundalik"
   }
 ]

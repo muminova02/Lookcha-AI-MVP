@@ -8,10 +8,11 @@ import type {
 export async function uploadProfile(
   formData: FormData,
 ): Promise<ProfileUploadResponse> {
+  // Do not set Content-Type manually: axios derives the multipart boundary
+  // from the FormData body automatically.
   const { data } = await apiClient.post<ProfileUploadResponse>(
     "/tryon/upload-profile",
     formData,
-    { headers: { "Content-Type": "multipart/form-data" } },
   );
   return data;
 }

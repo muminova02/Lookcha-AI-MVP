@@ -5,10 +5,15 @@ const baseURL =
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
   "http://localhost:8000";
 
-/** Shared Axios instance. All API modules import this. */
+/**
+ * Shared Axios instance. All API modules import this.
+ *
+ * Note: we intentionally do NOT set a default `Content-Type`. Axios then sets
+ * `application/json` for plain-object bodies and `multipart/form-data` with the
+ * correct boundary for `FormData` bodies (needed by /tryon/upload-profile).
+ */
 export const apiClient = axios.create({
   baseURL,
-  headers: { "Content-Type": "application/json" },
   timeout: 15_000,
 });
 
