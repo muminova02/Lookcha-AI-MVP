@@ -1,7 +1,6 @@
 """NanoBanana Pro virtual try-on adapter.
 
-Implements the `AITryOnAdapter` contract using the NanoBanana Pro API:
-
+Flow (per official docs):
 1. Create task:  POST {base}/api/v1/nanobanana/generate-pro
 2. Poll result:  GET  {base}/api/v1/nanobanana/record-info?taskId=...
 
@@ -9,11 +8,11 @@ Docs:
 - https://docs.nanobananaapi.ai/nanobanana-api/generate-image-pro
 - https://docs.nanobananaapi.ai/nanobanana-api/get-task-details
 
-Safety:
-- API key is read from settings (env) only; never logged.
-- Any failure (missing config, non-public image URLs, API/network error,
-  generation failure, or timeout) falls back to MockAITryOn so the demo
-  never breaks and the frontend contract is preserved.
+Image inputs are strictly:
+  [ customer_public_photo_url, product.tryon_reference_image_url ]
+The display/catalog image is never sent, so the model can't be fed a
+hanger/collage reference. Any failure falls back to MockAITryOn (source="mock")
+so the demo never breaks and the frontend contract is preserved.
 """
 
 from __future__ import annotations
@@ -34,17 +33,18 @@ logger = logging.getLogger("lookcha.ai.nanobanana")
 
 _PROMPT = (
     "Create a realistic virtual try-on image for Lookcha AI. Use the first image "
-    "as the customer full-body reference and the second image as the "
-    "clothing/product reference. Dress the customer in the selected clothing item "
-    "naturally. The final image must show the customer from head to toe, including "
-    "head, upper body, waist, legs, and feet. Do not crop the body. Preserve "
-    "natural body proportions, posture, and identity as much as possible. Show the "
-    "full outfit silhouette clearly. Use a clean studio or fitting-room background. "
-    "The fashion style must be modest, modern, and suitable for Uzbekistan. No "
-    "abstract gradient, no blur, no half-body crop, no missing feet, no missing head."
+    "as the customer full-body reference and the second image as the clean "
+    "clothing reference. Dress the customer in the selected clothing item "
+    "naturally. The final image must show the customer from head to toe, "
+    "including head, upper body, waist, legs, and feet. Do not crop the body. "
+    "Do not show the clothing on a hanger. Do not show a product catalog image. "
+    "Remove hanger context. Preserve natural body proportions, posture, and "
+    "identity as much as possible. Show the full outfit silhouette clearly. Use a "
+    "clean studio or fitting-room background. The fashion style must be modest, "
+    "modern, and suitable for Uzbekistan. No abstract gradient, no blur, no "
+    "half-body crop, no missing feet, no missing head, no watermark, no text overlay."
 )
 
-# Polling configuration (safe for an MVP demo: up to ~40s total).
 _MAX_ATTEMPTS = 20
 _POLL_INTERVAL_SECONDS = 2.0
 _HTTP_TIMEOUT = 30.0
@@ -75,48 +75,31 @@ class NanoBananaAdapter(AITryOnAdapter):
         self._base_url = settings.nanobanana_base_url.rstrip("/")
         self._fallback = MockAITryOn()
 
-    def _public_photo_url(self, photo_url: str | None) -> str | None:
-        """Map a locally-stored upload URL onto PUBLIC_BASE_URL for external access."""
-        if not photo_url or not settings.public_base_url:
-            return None
-        path = urlparse(photo_url).path  # e.g. /uploads/<file>.png
-        if not path:
-            return None
-        return settings.public_base_url.rstrip("/") + path
-
     async def generate(
         self,
         product: Product,
         profile: ProfileData,
         photo_url: str | None = None,
     ) -> AIGeneration:
-        # --- Preconditions; any miss → safe mock fallback -------------------
+        # `photo_url` is the customer's *public* photo URL (built by the service).
         if not self._api_key:
             return await self._fallback_with("NANOBANANA_API_KEY yo‘q", product, profile, photo_url)
 
-        if not settings.public_base_url:
+        if not _is_public_http_url(photo_url):
             return await self._fallback_with(
-                "PUBLIC_BASE_URL sozlanmagan (localhost rasm tashqi API uchun ochiq emas)",
-                product,
-                profile,
-                photo_url,
+                "Mijoz rasmi uchun ochiq URL yo‘q (PUBLIC_BASE_URL/ngrok kerak)",
+                product, profile, photo_url,
             )
 
-        customer_url = self._public_photo_url(photo_url)
-        if not _is_public_http_url(customer_url):
+        product_ref = product.tryon_reference_image_url
+        if not _is_public_http_url(product_ref):
             return await self._fallback_with(
-                "Mijoz rasmi uchun ochiq URL yaratib bo‘lmadi", product, profile, photo_url
+                "Mahsulotda ochiq try-on reference rasm yo‘q", product, profile, photo_url
             )
 
-        if not _is_public_http_url(product.image_url):
-            return await self._fallback_with(
-                "Mahsulot rasmi ochiq URL emas", product, profile, photo_url
-            )
-
-        # --- Real call ------------------------------------------------------
         try:
             async with httpx.AsyncClient(timeout=_HTTP_TIMEOUT) as client:
-                task_id = await self._create_task(client, customer_url, product.image_url)
+                task_id = await self._create_task(client, photo_url, product_ref)
                 if not task_id:
                     return await self._fallback_with("Task yaratilmadi", product, profile, photo_url)
 
@@ -135,6 +118,7 @@ class NanoBananaAdapter(AITryOnAdapter):
                     "Bu model sizning gavda tuzilishingizga mos tushadi. "
                     "Uzunligi, bel qismi va umumiy silueti yaxshi ko‘rinmoqda."
                 ),
+                source="nanobanana",
             )
         except (httpx.HTTPError, ValueError, KeyError) as exc:
             return await self._fallback_with(
@@ -184,11 +168,9 @@ class NanoBananaAdapter(AITryOnAdapter):
             if flag in (2, 3):
                 logger.warning(
                     "NanoBanana generation failed (flag=%s, code=%s)",
-                    flag,
-                    data.get("errorCode"),
+                    flag, data.get("errorCode"),
                 )
                 return None
-            # flag == 0 (or unknown): still generating; keep polling.
             logger.debug("NanoBanana still generating (attempt %s)", attempt + 1)
         logger.warning("NanoBanana polling timed out after %s attempts", _MAX_ATTEMPTS)
         return None
@@ -201,11 +183,7 @@ class NanoBananaAdapter(AITryOnAdapter):
         }
 
     async def _fallback_with(
-        self,
-        reason: str,
-        product: Product,
-        profile: ProfileData,
-        photo_url: str | None,
+        self, reason: str, product: Product, profile: ProfileData, photo_url: str | None
     ) -> AIGeneration:
         logger.warning("NanoBanana fallback to mock: %s", reason)
         return await self._fallback.generate(product, profile, photo_url)
